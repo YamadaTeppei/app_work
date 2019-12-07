@@ -3,8 +3,8 @@ from init_db import app, get_db, insert_db, query_db
 app = Flask(__name__)
 
 @app.route("/")
-def index():
-    return render_template("index.html")
+def login():
+    return render_template("login.html")
 
 @app.route("/register",methods=["POST"])
 def register():
@@ -29,6 +29,37 @@ def view():
     users = query_db("SELECT * FROM user")
     return render_template("view.html", users=users)
 
+@app.route("/login",methods=["POST,GET"])
+def login():
+    if request.method=="GET":
+        return render_template("index.html")
+
+    username = request.form["name"]
+    userpassword = request.form["password"]
+
+    db = get_db
+
+    user = db.execute('SELECT * FROM user WHERE name = ?', (username,), True)
+    user = db.execute('SELECT * FORM user WHERE password = ?', (userpassword,), True)
+
+    session.clear()
+    session['user_id'] = user['id']
+    return redirect('protected.html')
+
+@app.route("/logout",methods=["POST"])
+def logout():
+    session.clear()
+    return("login.html")
+
+@bp.before_app_request
+def load_logged_in_user():
+    user_id = session.get('user_id')
+
+    if user_id is None:
+        g.user = None
+    else:
+        db = get_db()
+        g.user = db.execute('SELECT * FROM user WHERE id = ?', (user_id,)).fetchone()
 
 if __name__ == '__main__':
     app.run()

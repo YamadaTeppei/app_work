@@ -1,0 +1,31 @@
+{% extends="layout.html" %}
+{% block body %}
+
+  <form action="/login" method="post">
+    <div class="row justify-content-center">
+        <h3>ログイン画面</h3>
+    </div>
+    <div class="row justify-content-center">
+
+      <div class="col-4"><h3>ユーザー名<span>*</span></h3></div>
+      <div class="col-4">
+          <input name="name" placeholder="ユーザー名" type="text" required>
+      </div>
+    </div>
+
+    <div class="row justify-content-center">
+      <div class="col-4"><h3>パスワード<span>*</span></h3></div>
+      <div class="col-4">
+            <input name="password" placeholder="パスワード" type="text" required>
+      </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <input type="submit" value="ログイン">
+      </div>
+  </form>
+  <form action="/login" method="get">
+    <div class="row justify-content-center">
+      <input type="submit" value="新規登録"＞
+  </form>
+{% endblock %}
