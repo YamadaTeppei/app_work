@@ -1,10 +1,10 @@
-from flask import Flask,render_template,request,redirect
+from flask import Flask,render_template,request,redirect, session, g, url_for
 from init_db import app, get_db, insert_db, query_db
 app = Flask(__name__)
 
 @app.route("/")
 def login():
-    return render_template("login.html")
+    return render_template("index.html")
 
 @app.route("/register",methods=["POST"])
 def register():
@@ -29,21 +29,20 @@ def view():
     users = query_db("SELECT * FROM user")
     return render_template("view.html", users=users)
 
-@app.route("/login",methods=["POST,GET"])
+@app.route("/login",methods=["GET", "POST"])
 def login():
-    if request.method=="GET":
+    if request.method == "GET":
         return render_template("index.html")
 
-    username = request.form["name"]
-    userpassword = request.form["password"]
+    username = request.form.get("name")
+    userpassword = request.form.get("password")
 
     db = get_db
 
-    user = db.execute('SELECT * FROM user WHERE name = ?', (username,), True)
-    user = db.execute('SELECT * FORM user WHERE password = ?', (userpassword,), True)
+    user = query_db('SELECT * FROM user WHERE name = ?', (username,), True)
+    user = query_db('SELECT * FORM user WHERE password = ?', (userpassword,), True)
 
-    session.clear()
-    session['user_id'] = user['id']
+    session["logged_in"] = True
     return redirect('protected.html')
 
 @app.route("/logout",methods=["POST"])
@@ -51,7 +50,7 @@ def logout():
     session.clear()
     return("login.html")
 
-@bp.before_app_request
+@app.before_app_request
 def load_logged_in_user():
     user_id = session.get('user_id')
 
@@ -59,7 +58,7 @@ def load_logged_in_user():
         g.user = None
     else:
         db = get_db()
-        g.user = db.execute('SELECT * FROM user WHERE id = ?', (user_id,)).fetchone()
+        g.user = query_db('SELECT * FROM user WHERE id = ?', (user_id,)).fetchone()
 
 if __name__ == '__main__':
     app.run()
