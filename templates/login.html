@@ -1,4 +1,4 @@
-{% extends="layout.html" %}
+{% extends"layout.html" %}
 {% block body %}
 
   <form action="/login" method="post">
@@ -10,6 +10,13 @@
       <div class="col-4"><h3>ユーザー名<span>*</span></h3></div>
       <div class="col-4">
           <input name="name" placeholder="ユーザー名" type="text" required>
+      </div>
+    </div>
+    <div class="row justify-content-center">
+
+      <div class="col-4"><h3>メールアドレス<span>*</span></h3></div>
+      <div class="col-4">
+          <input name="email" placeholder="メールアドレス" type="text" required>
       </div>
     </div>
 
@@ -24,7 +31,7 @@
         <input type="submit" value="ログイン">
       </div>
   </form>
-  <form action="/login" method="get">
+  <form action="/register" method="get">
     <div class="row justify-content-center">
       <input type="submit" value="新規登録"＞
   </form>

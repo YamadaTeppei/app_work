@@ -1,52 +1,7 @@
-{% extends "layout.html" %}
-
+{% extends"layout.html" %}
 {% block body %}
-      <form action="/register" method="post">
-        <div class="row justify-content-center">
 
-          <div class="col-4"><h3>ユーザー名<span>*</span></h3></div>
-          <div class="col-4">
-              <input name="name" placeholder="ユーザー名" type="text" required>
-          </div>
-        </div>
-        <div class="row justify-content-center">
-          <div class="col-4"><h3>メールアドレス<span>*</span></h3></div>
-          <div class="col-4">
-                <input name="email" placeholder="メールアドレス" type="text" required>
-          </div>
-        </div>
-
-        <div class="row justify-content-center">
-          <div class="col-4"><h3>パスワード<span>*</span></h3></div>
-          <div class="col-4">
-                <input name="password" placeholder="5文字入力してください" type="text" required>
-          </div>
-        </div>
-
-        <div class="row justify-content-center">
-          <div class="col-4 mt-3"><h3>Gender<span>*</span></h3></div>
-          <div class="col-4">
-              男性
-              <input type="radio" name="gender" value="Male" required>
-              女性
-              <input type="radio" name="gender" value="Female" required>
-          </div>
-        </div>
-
-        <div class="row justify-content-center">
-          <div class="col-4"><h3>Age</h3></div>
-          <div class="col-4">
-              <select name="age">
-                <option value=" "> </option>
-                {% for i in range(1,100,1) %}
-                  <option value="{{i}}">{{i}}才</option>
-                {% endfor %}
-              </select>
-          </div>
-        </div>
-
-      <div class="row justify-content-center">
-          <input type="submit" value="登録">
-        </div>
-      </form>
-  {% endblock %}
+  <a href="{{url_for('register')}}">register</a>
+  <a href="{{url_for('login')}}">login</a>
+  <a href="{{url_for('logout')}}">logout</a>
+{% endblock %}
