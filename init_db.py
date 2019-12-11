@@ -19,6 +19,13 @@ def get_db():
         db.row_factory = sqlite3.Row     # results of queries are of nametuple type
     return db
 
+def modify_db(query, args=()):
+    db = get_db()
+    cur = db.execute(query, args)
+    db.commit()
+    cur.close()
+    return None
+    
 def insert_db(query, args=()):
     db = get_db()
     cur = db.execute(query, args)

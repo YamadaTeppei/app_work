@@ -1,5 +1,5 @@
 from flask import Flask,render_template,request,redirect, session, url_for
-from init_db import app, get_db, insert_db, query_db
+from init_db import app, get_db, insert_db, modify_db, query_db
 app = Flask(__name__)
 
 @app.route("/")
@@ -63,13 +63,15 @@ def logout():
     session.clear()
     return redirect(url_for("top"))
 
-@app.route("/<int:userid>/profile", methods=["POST"])
+@app.route("/<int:userid>/profile", methods=["GET", "POST"])
 def profile():
     if "userid" not in session:
         return redirect(url_for("login"))
-    elif "userid" in session[userid]:
-        if request.method == "POST":
-            return render_template("Update.html", user=user)
+
+    if request.method == "POST":
+        return render_template("Update.html", user=user)
+    elif request.method == "GET":
+        return redirect(url_for("logout"))
 
 @app.route("/<int:userid>/update", methods=["POST"])
 def update(user):
