@@ -9,13 +9,21 @@
     </div>
   {% else %}
     <div class="row justify-content-center">
-      <div class="col-4"><h3><a href="{{url_for('logout')}}">ログアウト</a>\
-        <a href="{{url_for('login')}}">プロフィール画面へ</a></h3></div>
+      <div class="col-4"><h3><a href="{{url_for('logout')}}">ログアウト</a>\<a href="{{url_for('login')}}">プロフィール画面へ</a></h3></div>
     </div>
   {% endif %}
-  </div>
-  {% for text in texts %}
+  {% if titles|length != 0 %}
+    {% for title in titles %}
+      <div class="row justify-content-center">
+        <h3>{{ title["name"] }}</h3>
+      </div>
+    {% endfor %}
+  {% else %}
     <div class="row justify-content-center">
-      <h3>{{ text["text_title"] }}</h3>
-{% endfor %}
+      <h3>無し</h3>
+    </div>
+  {% endif %}
+  <div class="row justify-content-center">
+    <h5><a href="{{url_for('newtitle', userid=session['userid'])}}">タイトルの新規作成</a></h5>
+  </div>
 {% endblock %}

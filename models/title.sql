@@ -1,0 +1,5 @@
+CREATE TABLE Title (
+  id INTEGER PRIMARY KEY,
+  name VARCHAR(255),
+  user_id VARCHAR(255)
+);

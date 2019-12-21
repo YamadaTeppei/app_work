@@ -1,0 +1,11 @@
+{% extends"layout.html" %}
+{% block body %}
+  <header><h2>タイトルの作成</h2></header>
+  <form action="{{url_for('newtitle', userid=session['userid'])}}" method="post">
+    <div class="row justify-content-center">
+      <input name="title" type="text" required>
+    </div>
+    <div class="row justify-content-center">
+      <button type="submit">作成</button>
+  </form>
+{% endblock %}

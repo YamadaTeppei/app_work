@@ -1,14 +1,13 @@
 from flask import Flask,render_template,request,redirect, session, url_for
-from init_db import app, get_db, insert_db, modify_db, query_db
-from text_db import app, text_get, text_insert, text_modify, text_query
+from init_db import app, get_db, modify_db, query_db
 app = Flask(__name__)
 
 @app.route("/")
 def top():
-    texts = text_query("SELECT * FROM text")
+    titles = query_db("title", "SELECT * FROM title")
     if "userid" in session:
-        return render_template("index.html",user="online", texts=texts)
-    return render_template("index.html", texts=texts)
+        return render_template("index.html",user="online", titles=titles)
+    return render_template("index.html", titles=titles)
 
 
 @app.route("/register/",methods=["GET", "POST"])
@@ -26,7 +25,7 @@ def register():
         session["useremail"] = request.form.get("email")
         session["usergender"] = request.form.get("gender")
 
-        insert_db("INSERT INTO user (name, email, password, gender, age) \
+        query_db("user", "INSERT INTO user (name, email, password, gender, age) \
                    VALUES(?, ?, ?, ?, ?)",
                    (session["username"],session["useremail"],request.form.get("password"),session["usergender"],request.form.get("age")))
         user = query_db("SELECT * FROM user WHERE email = ?", (session["useremail"],), True)
@@ -102,6 +101,18 @@ def update(userid):
         elif request.method == "GET":
             user = query_db("SELECT * FROM user WHERE id = ?", (userid,), True)
             return render_template("Update.html", user=user)
+
+@app.route("/<int:userid>/newtitle", methods=["GET", "POST"])
+def newtitle(userid):
+    if "userid" not in session:
+        return redirect(url_for("login"))
+    else:
+        if request.method == "GET":
+            return render_template("newtitle.html")
+        if request.method == "POST":
+            modify_db("title", "INSERT INTO title  (name, user_id) VALUES(?, ?)", (request.form.get("title"), session['userid']))
+            return redirect(url_for("top"))
+
 
 if __name__ == '__main__':
     app.secret_key = "jijjkla"
