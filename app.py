@@ -1,16 +1,20 @@
 from flask import Flask,render_template,request,redirect, session, url_for
 from init_db import app, get_db, insert_db, modify_db, query_db
+from text_db import app, text_get, text_insert, text_modify, text_query
 app = Flask(__name__)
 
 @app.route("/")
 def top():
-    return render_template("index.html")
+    texts = text_query("SELECT * FROM text")
+    if "userid" in session:
+        return render_template("index.html",user="online", texts=texts)
+    return render_template("index.html", texts=texts)
+
 
 @app.route("/register/",methods=["GET", "POST"])
 def register():
     if "userid" in session:
-
-        return redirect(url_for("Profile.html", user=user))
+        return redirect(url_for("profile", userid=session["userid"]))
     if request.method == "GET":
         return render_template("register.html")
     elif request.method == "POST":
@@ -39,7 +43,7 @@ def view():
 @app.route("/login",methods=["GET", "POST"])
 def login():
     if "userid" in session:
-        return redirect(url_for("Profile.html", user=user))
+        return redirect(url_for("profile", userid=session["userid"]))
     if request.method == "GET":
         return render_template("login.html")
     elif request.method == "POST":
@@ -56,54 +60,48 @@ def login():
             return redirect(url_for("login"))
         session["userid"] = user["id"]
 
-        return render_template("Profile.html", user=user)
+        return redirect(url_for("profile", userid=session["userid"]))
 
 @app.route("/logout")
 def logout():
     session.clear()
     return redirect(url_for("top"))
 
-@app.route("/<int:userid>/profile", methods=["GET", "POST"])
-def profile():
+@app.route("/<int:userid>/")
+def profile(userid):
     if "userid" not in session:
         return redirect(url_for("login"))
 
-    if request.method == "POST":
-        return render_template("Update.html", user=user)
-    elif request.method == "GET":
-        return redirect(url_for("logout"))
+    user = query_db("SELECT * FROM user WHERE id = ?", (userid,), True)
+    if int(userid) != session["userid"]:
+        return render_template("Profile.html", user=user, f=0)
+    else:
+        return render_template("Profile.html", user=user, f=1)
 
-@app.route("/<int:userid>/update", methods=["POST"])
-def update(user):
+@app.route("/<int:userid>/update", methods=["GET", "POST"])
+def update(userid):
     if "userid" not in session:
         return redirect(url_for("login"))
-    elif "userid" in session[userid]:
+    elif int(userid) != session["userid"]:
+        return redirect(url_for("profile", userid=session["userid"]))
+    else:
         if request.method == "POST":
-            if  request.form.get("name") is None:
-                pass
-            else:
-                session["username"] = request.form.get("name")
-
-            if  request.form.get("email") is None:
-                pass
-            elif "@" not in request.form.get("email"):
-                return redirect(url_for("update"))
-            else:
-                if useremail == request.form.get("email"):
-                    return redirect(url_for("update"))
-                session["useremail"] = request.form.get("email")
-
-            if request.form.get("password") is None:
-                pass
-            elif len(request.form.get("password")) <= 5:
+            if "@" not in request.form.get("email"):
                 return redirect(url_for("update"))
 
-                modify_db("UPDATE user \
-                           SET name=?, email=?, password=?, \
-                           WHERE id=?",
-                           (session['name'], session['email'],request.form.get("password")))
-            return render_template ('profile', user=user)
+            session["username"] = request.form.get("name")
+            session["useremail"] = request.form.get("email")
 
+            if len(request.form.get("password")) <= 5:
+                return redirect(url_for("update"))
+
+            modify_db("UPDATE user \
+                         SET name=?, email=?, password=? WHERE id=?",
+                           (session['username'], session['useremail'],request.form.get("password"), session['userid']))
+            return redirect(url_for('profile', userid=session["userid"]))
+        elif request.method == "GET":
+            user = query_db("SELECT * FROM user WHERE id = ?", (userid,), True)
+            return render_template("Update.html", user=user)
 
 if __name__ == '__main__':
     app.secret_key = "jijjkla"

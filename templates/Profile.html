@@ -43,14 +43,21 @@
           </div>
         </div>
 
-    <form action="/update" method="post">
-      <div class="row justify-content-center">
-          <input type="submit" value="編集画面へ">
-      </div>
-    </form>
-    <form action="/" method="get">
+    {% if f == 1 %}
+      <form action="{{url_for('update', userid=session['userid'])}}" method="get">
+        <div class="row justify-content-center">
+            <input type="submit" value="編集画面へ">
+        </div>
+      </form>
+    {% endif %}
+
+    <form action="/logout" method="get">
       <div class="row justify-content-center">
           <input type="submit" value="ログアウト">
       </div>
     </form>
+    <div class="row justify-content-center">
+        <h4><a href="{{url_for('top')}}">topページへ</a></h4>
+    </div>
+
   {% endblock %}
