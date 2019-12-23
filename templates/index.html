@@ -9,13 +9,13 @@
     </div>
   {% else %}
     <div class="row justify-content-center">
-      <div class="col-4"><h3><a href="{{url_for('logout')}}">ログアウト</a>\<a href="{{url_for('login')}}">プロフィール画面へ</a></h3></div>
+      <div class="col-4"><h3><a href="{{url_for('logout')}}">ログアウト</a>\<a href="{{url_for('profile', userid=session['userid'])}}">プロフィール画面へ</a></h3></div>
     </div>
   {% endif %}
   {% if titles|length != 0 %}
     {% for title in titles %}
       <div class="row justify-content-center">
-        <h3>{{ title["name"] }}</h3>
+        <h3><a href="{{url_for('title', title_id=title['id'])}}">{{ title["name"] }}</a></h3>
       </div>
     {% endfor %}
   {% else %}

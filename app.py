@@ -25,18 +25,18 @@ def register():
         session["useremail"] = request.form.get("email")
         session["usergender"] = request.form.get("gender")
 
-        query_db("user", "INSERT INTO user (name, email, password, gender, age) \
+        modify_db("user", "INSERT INTO user (name, email, password, gender, age) \
                    VALUES(?, ?, ?, ?, ?)",
                    (session["username"],session["useremail"],request.form.get("password"),session["usergender"],request.form.get("age")))
-        user = query_db("SELECT * FROM user WHERE email = ?", (session["useremail"],), True)
+        user = query_db("user", "SELECT * FROM user WHERE email = ?", (session["useremail"],), True)
         session["userid"] = user["id"]
-        return render_template("Profile.html", user=user)
+        return redirect(url_for("profile", userid=session["userid"]))
 
 @app.route("/view")
 def view():
     if "userid" not in session:
         return redirect(url_for("login"))
-    users = query_db("SELECT * FROM user")
+    users = query_db("user", "SELECT * FROM user")
     return render_template("view.html", users=users)
 
 @app.route("/login",methods=["GET", "POST"])
@@ -52,7 +52,7 @@ def login():
             return redirect(url_for("login"))
         session["username"] = request.form.get("name")
         session["useremail"] = request.form.get("email")
-        user = query_db("SELECT * FROM user WHERE email = ?", (session["useremail"],), True)
+        user = query_db("user", "SELECT * FROM user WHERE email = ?", (session["useremail"],), True)
         if user == None:
             return redirect(url_for("login"))
         if user["password"] != request.form.get("password"):
@@ -71,7 +71,7 @@ def profile(userid):
     if "userid" not in session:
         return redirect(url_for("login"))
 
-    user = query_db("SELECT * FROM user WHERE id = ?", (userid,), True)
+    user = query_db("user", "SELECT * FROM user WHERE id = ?", (userid,), True)
     if int(userid) != session["userid"]:
         return render_template("Profile.html", user=user, f=0)
     else:
@@ -94,12 +94,12 @@ def update(userid):
             if len(request.form.get("password")) <= 5:
                 return redirect(url_for("update"))
 
-            modify_db("UPDATE user \
+            modify_db("user", "UPDATE user \
                          SET name=?, email=?, password=? WHERE id=?",
                            (session['username'], session['useremail'],request.form.get("password"), session['userid']))
             return redirect(url_for('profile', userid=session["userid"]))
         elif request.method == "GET":
-            user = query_db("SELECT * FROM user WHERE id = ?", (userid,), True)
+            user = query_db("user", "SELECT * FROM user WHERE id = ?", (userid,), True)
             return render_template("Update.html", user=user)
 
 @app.route("/<int:userid>/newtitle", methods=["GET", "POST"])
@@ -112,6 +112,20 @@ def newtitle(userid):
         if request.method == "POST":
             modify_db("title", "INSERT INTO title  (name, user_id) VALUES(?, ?)", (request.form.get("title"), session['userid']))
             return redirect(url_for("top"))
+
+@app.route("/<int:title_id>/title", methods=["GET", "POST"])
+def title(title_id):
+    if request.method == "GET":
+        comments = query_db("comment", "SELECT * FROM comment WHERE title_id = ?", (title_id), True)
+        title = query_db("title", "SELECT * FROM title WHERE id = ?", (title_id,), True)
+        return render_template("title.html",title=title, comments=comments)
+    else:
+        if "userid" not in session:
+            return redirect(url_for("login"))
+        else:
+            modify_db("comment", "INSERT INTO comment (text, user_id, title_id) VALUES(?, ?, ?)",
+                    (request.form.get("comment"), title_id, session["userid"]))
+            return redirect(url_for("title", title_id=title_id))
 
 
 if __name__ == '__main__':

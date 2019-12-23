@@ -45,3 +45,7 @@ if __name__ == '__main__':
         print('Initializing "title.db"...')
         init_db("title")
         print('Done.')
+    if not path.exists("models/comment.db"):
+        print('Initializing "comment.db"...')
+        init_db("comment")
+        print('Done.')
