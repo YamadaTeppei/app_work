@@ -5,9 +5,9 @@ app = Flask(__name__)
 @app.route("/")
 def top():
     titles = query_db("title", "SELECT * FROM title")
-    if "userid" in session:
-        return render_template("index.html",user="online", titles=titles)
-    return render_template("index.html", titles=titles)
+    if "userid" not in session:
+        return render_template("index.html", titles=titles)
+    return render_template("index.html",user="online", titles=titles)
 
 
 @app.route("/register/",methods=["GET", "POST"])
@@ -116,15 +116,15 @@ def newtitle(userid):
 @app.route("/<int:title_id>/title", methods=["GET", "POST"])
 def title(title_id):
     if request.method == "GET":
-        comments = query_db("comment", "SELECT * FROM comment WHERE title_id = ?", (title_id), True)
+        comments = query_db("comment", "SELECT * FROM comment WHERE title_id = ?", (title_id,))
         title = query_db("title", "SELECT * FROM title WHERE id = ?", (title_id,), True)
         return render_template("title.html",title=title, comments=comments)
     else:
         if "userid" not in session:
             return redirect(url_for("login"))
         else:
-            modify_db("comment", "INSERT INTO comment (text, user_id, title_id) VALUES(?, ?, ?)",
-                    (request.form.get("comment"), title_id, session["userid"]))
+            modify_db("comment", "INSERT INTO comment (text_, user_id, title_id) VALUES(?, ?, ?)",
+                    (request.form.get("comment"), session["userid"], title_id))
             return redirect(url_for("title", title_id=title_id))
 
 
