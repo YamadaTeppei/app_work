@@ -1,17 +1,37 @@
 {% extends"layout.html" %}
 {% block body %}
-  <header class="row justify-content-center">
-    <h2>TOPページ</h2>
-  </header>
-  {% if user != "online" %}
-    <div class="row justify-content-center">
-      <h3><a href="{{url_for('login')}}">ログイン</a></h3>
-    </div>
-  {% else %}
-    <div class="row justify-content-center">
-      <div class="col-4"><h3><a href="{{url_for('logout')}}">ログアウト</a>\<a href="{{url_for('profile', userid=session['userid'])}}">プロフィール画面へ</a></h3></div>
-    </div>
-  {% endif %}
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <a class="navbar-brand" href="{{ url_for('top') }}">ブランド</a>
+      <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="ナビゲーションの切替">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+          {% if user == "online" %}
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('profile', userid=session['userid']) }}">プロフィール</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('newtitle', userid=session['userid']) }}">タイトルの新規作成</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('logout') }}">ログアウト</a>
+            </li>
+          {% else %}
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('login') }}">ログイン</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('register') }}">アカウントの新規作成</a>
+            </li>
+          {% endif %}
+        </ul>
+      </div>
+    </nav>
+
+    <header class="row justify-content-center">
+      <h2>TOPページ</h2>
+    </header>
   {% if titles|length != 0 %}
     {% for title in titles %}
       <div class="row justify-content-center">
@@ -23,7 +43,4 @@
       <h3>無し</h3>
     </div>
   {% endif %}
-  <div class="row justify-content-center">
-    <h5><a href="{{url_for('newtitle', userid=session['userid'])}}">タイトルの新規作成</a></h5>
-  </div>
 {% endblock %}

@@ -115,6 +115,8 @@ def newtitle(userid):
 
 @app.route("/<int:title_id>/title", methods=["GET", "POST"])
 def title(title_id):
+    if "userid" in session:
+        user = "online"
     if request.method == "GET":
         comments = query_db("comment", "SELECT * FROM comment WHERE title_id = ?", (title_id,))
         title = query_db("title", "SELECT * FROM title WHERE id = ?", (title_id,), True)
