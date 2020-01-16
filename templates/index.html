@@ -35,7 +35,7 @@
   {% if titles|length != 0 %}
     {% for title in titles %}
       <div class="row justify-content-center">
-        <h3><a href="{{url_for('title', title_id=title['id'])}}">{{ title["name"] }}</a></h3>
+        <h3><a href="{{url_for('title', title_id=title['id'])}}" class="text-dark">{{ title["name"] }}</a></h3>
       </div>
     {% endfor %}
   {% else %}

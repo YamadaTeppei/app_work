@@ -31,19 +31,36 @@
 
   <header><h2>{{title["name"]}}</h2></header>
   {% if comments|length != 0 %}
-    {% for i,comment in enumerate(comments,1) %}
-      <div class="row justify-content-center">
-        <h3>コメント:{{ i }}/user:{{ query_db("user", "SELECT * FROM user WHERE id = ?", (comment['user_id'],), True)["name"] }}</h3>
-      </div>
-      <div class="row justify-content-center">
-        <h4>{{ comment["text_"] }}</h4>
-      </div>
+    <!-- コメントのナンバリング -->
+
+    <ul>
+    {% for comment in comments[::-1] %}
+        <div class="row justify-content-center">
+          <h3>/{{ comment["user_id"] }}</h3>
+        </div>
+        <div class="row justify-content-center">
+          <h4>{{ comment["text_"] }}</h4>
+        </div>
     {% endfor %}
+    </ul>
   {% else %}
     <div class="row justify-content-center">
       <h3>まだコメントがありません</h3>
     </div>
   {% endif %}
+  var xhr = new XMLHttpRequest();
+
+  xhr.open(method="post", {{ url_for('title', title_id=title['id'])) }};
+  xhr.setRequestHeader('content-type', 'application/x-www-form-urlencoded;charset=UTF-8');
+  xhr.send(  );
+
+  xhr.onreadystatechange = function() {
+
+      if(xhr.readyState === 4 && xhr.status === 200) {
+
+          //データを取得した後の処理を書く
+      }
+  }
   <form action="{{url_for('title', title_id=title['id'])}}" method="post">
     <div class="row justify-content-center">
       <input name="comment" type="text" required>

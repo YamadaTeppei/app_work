@@ -83,22 +83,22 @@ def update(userid):
     elif int(userid) != session["userid"]:
         return redirect(url_for("profile", userid=session["userid"]))
     else:
+        user = query_db("user", "SELECT * FROM user WHERE id = ?", (userid,), True)
         if request.method == "POST":
             if "@" not in request.form.get("email"):
-                return redirect(url_for("update"))
+                return redirect(url_for("update", userid=session["userid"]))
 
-            session["username"] = request.form.get("name")
+                session["username"] = request.form.get("name")
             session["useremail"] = request.form.get("email")
 
-            if len(request.form.get("password")) <= 5:
-                return redirect(url_for("update"))
+            if user["password"] != request.form.get("password"):
+                return redirect(url_for("update", userid=session["userid"]))
 
             modify_db("user", "UPDATE user \
                          SET name=?, email=?, password=? WHERE id=?",
                            (session['username'], session['useremail'],request.form.get("password"), session['userid']))
             return redirect(url_for('profile', userid=session["userid"]))
         elif request.method == "GET":
-            user = query_db("user", "SELECT * FROM user WHERE id = ?", (userid,), True)
             return render_template("Update.html", user=user)
 # タイトル新規作成ページ
 @app.route("/<int:userid>/newtitle", methods=["GET", "POST"])
@@ -119,7 +119,7 @@ def title(title_id):
     if request.method == "GET":
         comments = query_db("comment", "SELECT * FROM comment WHERE title_id = ?", (title_id,))
         title = query_db("title", "SELECT * FROM title WHERE id = ?", (title_id,), True)
-        return render_template("title.html",title=title, comments=comments, query_db=query_db, enumerate=enumerate)
+        return render_template("title.html",title=title, comments=comments)
     else:
         if "userid" not in session:
             return redirect(url_for("login"))
